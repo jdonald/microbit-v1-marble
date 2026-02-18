@@ -1,11 +1,13 @@
 """
-micro:bit V1 Marble Puzzle
+micro:bit V2 Marble Puzzle
 
 Tilt the micro:bit to roll a marble (bright LED) into a receptacle
 (U-shaped pocket of dim wall LEDs with a blinking target inside).
+Uses the V2 built-in speaker for collision and victory sound effects.
 """
 from microbit import *
 import random
+import audio
 
 # -- Physics constants --
 ACCEL_SCALE = 0.00004   # milli-g to velocity per tick
@@ -25,6 +27,24 @@ MIN_DIST = 3             # minimum Manhattan distance marble-to-target
 # -- Win animation --
 WIN_MS = 1000
 STAR = Image("90509:09990:99999:09990:90509")
+
+# -- Sound effects (V2 built-in speaker) --
+# Short low thud for wall/edge collisions
+SFX_BUMP = audio.SoundEffect(
+    freq_start=600, freq_end=150, duration=80,
+    vol_start=180, vol_end=0,
+    waveform=audio.SoundEffect.WAVEFORM_NOISE,
+    shape=audio.SoundEffect.SHAPE_LOG
+)
+# Rising cheerful tone for victory
+SFX_WIN = audio.SoundEffect(
+    freq_start=600, freq_end=1400, duration=400,
+    vol_start=200, vol_end=200,
+    waveform=audio.SoundEffect.WAVEFORM_SINE,
+    shape=audio.SoundEffect.SHAPE_CURVE
+)
+# Minimum speed to trigger a bump sound (avoids spamming while resting against wall)
+BUMP_SPEED_MIN = 0.05
 
 # Wall offsets by opening direction (relative to target cell)
 # 'N' = open toward top (y-1), walls left/right/below
@@ -98,7 +118,8 @@ def new_level():
 
 
 def update(mx, my, vx, vy, walls):
-    """Apply accelerometer forces, move marble, handle collisions."""
+    """Apply accelerometer forces, move marble, handle collisions.
+    Returns (mx, my, vx, vy, hit) where hit is True if a collision occurred."""
     ax = accelerometer.get_x()
     ay = accelerometer.get_y()
 
@@ -112,31 +133,44 @@ def update(mx, my, vx, vy, walls):
         vx *= f
         vy *= f
 
+    # Track pre-collision speed for sound triggering
+    pre_speed = (vx * vx + vy * vy) ** 0.5
+    hit = False
+
     # -- X movement + collision --
     nx = mx + vx
     if nx < 0.0:
         nx = 0.0
+        hit = True
         vx = 0.0
     elif nx > 4.0:
         nx = 4.0
+        hit = True
         vx = 0.0
     if (rp(nx), rp(my)) in walls:
         nx = mx
+        hit = True
         vx = 0.0
 
     # -- Y movement + collision --
     ny = my + vy
     if ny < 0.0:
         ny = 0.0
+        hit = True
         vy = 0.0
     elif ny > 4.0:
         ny = 4.0
+        hit = True
         vy = 0.0
     if (rp(nx), rp(ny)) in walls:
         ny = my
+        hit = True
         vy = 0.0
 
-    return nx, ny, vx, vy
+    # Only count as audible hit if marble was moving fast enough
+    hit = hit and pre_speed >= BUMP_SPEED_MIN
+
+    return nx, ny, vx, vy, hit
 
 
 def render(mx, my, tx, ty, walls, now):
@@ -152,6 +186,7 @@ def render(mx, my, tx, ty, walls, now):
 
 
 def win():
+    audio.play(SFX_WIN, wait=False)
     display.show(STAR)
     sleep(WIN_MS)
     display.clear()
@@ -163,7 +198,10 @@ tx, ty, walls, mx, my, vx, vy = new_level()
 
 while True:
     t0 = running_time()
-    mx, my, vx, vy = update(mx, my, vx, vy, walls)
+    mx, my, vx, vy, hit = update(mx, my, vx, vy, walls)
+
+    if hit:
+        audio.play(SFX_BUMP, wait=False)
 
     if rp(mx) == tx and rp(my) == ty:
         win()

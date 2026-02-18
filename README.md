@@ -1,6 +1,6 @@
-# micro:bit V1 Marble Puzzle
+# micro:bit V2 Marble Puzzle
 
-A tilt-controlled puzzle game for the BBC micro:bit V1. Roll a marble across the 5x5 LED grid by tilting the board and guide it into a U-shaped receptacle. Each time you succeed, a new randomly generated level begins.
+A tilt-controlled puzzle game for the BBC micro:bit V2. Roll a marble across the 5x5 LED grid by tilting the board and guide it into a U-shaped receptacle. The built-in speaker provides sound effects — a thud when you hit a wall and a cheerful tone when you complete a level. Each time you succeed, a new randomly generated level begins.
 
 ## How to Play
 
@@ -16,11 +16,16 @@ Your goal is to guide the marble into the receptacle — a pocket walled on thre
 | Medium, blinking (5) | Target — the inside of the receptacle |
 | Dim, steady (2) | Walls — the three sides of the receptacle |
 
-When you get the marble into the target, a star flashes for one second and a new puzzle is generated.
+When you get the marble into the target, a victory sound plays, a star flashes for one second, and a new puzzle is generated.
+
+### Sound Effects
+
+- **Wall bump**: Short noise burst when the marble hits a wall or grid edge (only triggers when moving fast enough to avoid repetitive sounds)
+- **Victory**: Rising sine-wave tone when completing a level
 
 ## Requirements
 
-- BBC micro:bit **V1** (also works on V2)
+- BBC micro:bit **V2** (uses the built-in speaker for sound effects)
 - USB cable (micro-USB)
 - Python 3.6+
 
