@@ -30,18 +30,18 @@ STAR = Image("90509:09990:99999:09990:90509")
 
 # -- Sound effects (V2 built-in speaker) --
 # Short low thud for wall/edge collisions
-SFX_BUMP = audio.SoundEffect(
+SFX_BUMP = SoundEffect(
     freq_start=600, freq_end=150, duration=80,
     vol_start=180, vol_end=0,
-    waveform=audio.SoundEffect.WAVEFORM_NOISE,
-    shape=audio.SoundEffect.SHAPE_LOG
+    waveform=SoundEffect.WAVEFORM_NOISE,
+    shape=SoundEffect.SHAPE_LOG
 )
 # Rising cheerful tone for victory
-SFX_WIN = audio.SoundEffect(
+SFX_WIN = SoundEffect(
     freq_start=600, freq_end=1400, duration=400,
     vol_start=200, vol_end=200,
-    waveform=audio.SoundEffect.WAVEFORM_SINE,
-    shape=audio.SoundEffect.SHAPE_CURVE
+    waveform=SoundEffect.WAVEFORM_SINE,
+    shape=SoundEffect.SHAPE_CURVE
 )
 # Minimum speed to trigger a bump sound (avoids spamming while resting against wall)
 BUMP_SPEED_MIN = 0.05
