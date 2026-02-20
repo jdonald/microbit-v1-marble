@@ -7,7 +7,7 @@ Uses the V2 built-in speaker for collision and victory sound effects.
 """
 from microbit import *
 import random
-import audio
+import music
 
 # -- Physics constants --
 ACCEL_SCALE = 0.00004   # milli-g to velocity per tick
@@ -28,21 +28,11 @@ MIN_DIST = 3             # minimum Manhattan distance marble-to-target
 WIN_MS = 1000
 STAR = Image("90509:09990:99999:09990:90509")
 
-# -- Sound effects (V2 built-in speaker) --
-# Short low thud for wall/edge collisions
-SFX_BUMP = SoundEffect(
-    freq_start=600, freq_end=150, duration=80,
-    vol_start=180, vol_end=0,
-    waveform=SoundEffect.WAVEFORM_NOISE,
-    shape=SoundEffect.SHAPE_LOG
-)
-# Rising cheerful tone for victory
-SFX_WIN = SoundEffect(
-    freq_start=600, freq_end=1400, duration=400,
-    vol_start=200, vol_end=200,
-    waveform=SoundEffect.WAVEFORM_SINE,
-    shape=SoundEffect.SHAPE_CURVE
-)
+# -- Sound effects (V2 built-in speaker via music module) --
+# Short low note for wall/edge collisions
+SFX_BUMP = ['c3:1']
+# Rising arpeggio for victory
+SFX_WIN = ['e5:2', 'g5:2', 'c6:4']
 # Minimum speed to trigger a bump sound (avoids spamming while resting against wall)
 BUMP_SPEED_MIN = 0.05
 
@@ -186,7 +176,7 @@ def render(mx, my, tx, ty, walls, now):
 
 
 def win():
-    audio.play(SFX_WIN, wait=False)
+    music.play(SFX_WIN, wait=False)
     display.show(STAR)
     sleep(WIN_MS)
     display.clear()
@@ -201,7 +191,7 @@ while True:
     mx, my, vx, vy, hit = update(mx, my, vx, vy, walls)
 
     if hit:
-        audio.play(SFX_BUMP, wait=False)
+        music.play(SFX_BUMP, wait=False)
 
     if rp(mx) == tx and rp(my) == ty:
         win()
