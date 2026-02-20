@@ -68,17 +68,18 @@ def gen_receptacle():
     """Generate a random receptacle. Returns (tx, ty, walls_set, direction)."""
     d = random.randint(0, 3)
     # Determine valid ranges so all walls stay in 0..4
-    if d == 0:    # N: walls at tx-1, tx+1, ty+1
+    # Constraints: all 3 walls in bounds AND opening cell in bounds
+    if d == 0:    # N: walls at tx-1, tx+1, ty+1; opens at ty-1
         tx = random.randint(1, 3)
-        ty = random.randint(0, 3)
-    elif d == 1:  # S: walls at tx-1, tx+1, ty-1
-        tx = random.randint(1, 3)
-        ty = random.randint(1, 4)
-    elif d == 2:  # E: walls at ty-1, ty+1, tx-1
-        tx = random.randint(1, 4)
         ty = random.randint(1, 3)
-    else:         # W: walls at ty-1, ty+1, tx+1
-        tx = random.randint(0, 3)
+    elif d == 1:  # S: walls at tx-1, tx+1, ty-1; opens at ty+1
+        tx = random.randint(1, 3)
+        ty = random.randint(1, 3)
+    elif d == 2:  # E: walls at ty-1, ty+1, tx-1; opens at tx+1
+        tx = random.randint(1, 3)
+        ty = random.randint(1, 3)
+    else:         # W: walls at ty-1, ty+1, tx+1; opens at tx-1
+        tx = random.randint(1, 3)
         ty = random.randint(1, 3)
     return tx, ty, make_walls(tx, ty, d)
 
